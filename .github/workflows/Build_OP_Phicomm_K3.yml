@@ -5,7 +5,7 @@
 # Youtube Channel: https://goo.gl/fvkdwm 
 #=================================================
 
-name: Build_phicomm_k3
+name: Build_Phicomm_K3
 
 on:
   workflow_dispatch:
