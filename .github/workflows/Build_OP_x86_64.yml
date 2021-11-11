@@ -77,7 +77,6 @@ jobs:
         ./scripts/feeds install -a
     
     - name: Customization
-      working-directory: ./openwrt
       run: |
         chmod +x ./customize.sh && ./customize.sh
     
