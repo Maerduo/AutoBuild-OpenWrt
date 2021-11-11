@@ -76,12 +76,18 @@ jobs:
         ./scripts/feeds install -a
         ./scripts/feeds install -a
 
-    #- name: Import external feeds - passwall
-    #  working-directory: ./openwrt
-    #  run: |
+    - name: Import external feeds - passwall
+      working-directory: ./openwrt
+      run: |
+        git clone https://github.com/esirplayground/luci-app-poweroff.git package/lean
+        git clone https://github.com/sirpdboy/luci-app-autopoweroff.git
+        git https://github.com/AlexZhuo/luci-app-bandwidthd.git
+        git https://github.com/tty228/luci-app-serverchan.git
+    #    git https://github.com/kenzok8/openwrt-packages.git
+    #    git https://github.com/kenzok8/small.git
+        
     #    git clone https://github.com/xiaorouji/openwrt-passwall.git package/lienol
-    #    git clone "your_github_link" package/"your_folder_name"
-   
+    #    git clone "your_github_link" package/"your_folder_name"   
 
     #- name: Import external feeds - JerryKuKu Argon
     #  working-directory: ./openwrt
