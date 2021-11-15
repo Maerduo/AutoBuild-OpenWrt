@@ -88,18 +88,75 @@ jobs:
           ./scripts/feeds install -a
           ./scripts/feeds install -a
       
-      #- name: Generate configuration file
-      #  working-directory: ./openwrt
-      #  run: |
-      #    rm -f ./.config*
-      #    touch ./.config
-      
-      - name: Configuration - Build Phicomm K3
-        env:
-          CONFIG_FILE: 'Phicomm_K3_Auto.config'
+      - name: Generate configuration file
+        working-directory: ./openwrt
         run: |
-          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-          cd openwrt && make defconfig
+          rm -f ./.config*
+          touch ./.config
+          
+          # 编译PhcommK3固件:
+          cat >> .config <<EOF
+          CONFIG_TARGET_bcm53xx=y
+          CONFIG_TARGET_bcm53xx_generic=y
+          CONFIG_TARGET_bcm53xx_generic_DEVICE_phicomm_k3=y
+          EOF
+          # 固件压缩, 编译ext4格式固件
+          # 注意如果选的插件数目多，CONFIG_TARGET_ROOTFS_PARTSIZE要设置大一些
+          cat >> .config <<EOF
+          CONFIG_EXTERNAL_CPIO=""
+          CONFIG_TARGET_ROOTFS_SQUASHFS=y
+          CONFIG_TARGET_SQUASHFS_BLOCK_SIZE=1024
+          CONFIG_TARGET_UBIFS_FREE_SPACE_FIXUP=y
+          CONFIG_TARGET_UBIFS_JOURNAL_SIZE=""
+          EOF
+          # 编译UEFI固件:
+          # cat >> .config <<EOF
+          # CONFIG_EFI_IMAGES=y
+          # EOF
+          # IPv6支持:
+          # cat >> .config <<EOF
+          # CONFIG_PACKAGE_dnsmasq_full_dhcpv6=y
+          # CONFIG_PACKAGE_ipv6helper=y
+          # EOF
+          # 多文件系统支持:
+          cat >> .config <<EOF
+          CONFIG_PACKAGE_kmod-fs-nfs=y
+          CONFIG_PACKAGE_kmod-fs-nfs-common=y
+          CONFIG_PACKAGE_kmod-fs-nfs-v3=y
+          CONFIG_PACKAGE_kmod-fs-nfs-v4=y
+          CONFIG_PACKAGE_kmod-fs-ntfs=y
+          CONFIG_PACKAGE_kmod-fs-squashfs=y
+          EOF
+          # USB3.0支持:
+          cat >> .config <<EOF
+          CONFIG_PACKAGE_kmod-usb-ohci=y
+          CONFIG_PACKAGE_kmod-usb-ohci-pci=y
+          CONFIG_PACKAGE_kmod-usb2=y
+          CONFIG_PACKAGE_kmod-usb2-pci=y
+          CONFIG_PACKAGE_kmod-usb3=y
+          EOF
+          # 常用LuCI插件选择, 主要定制passwall与ssr-plus
+          cat >> .config <<EOF
+          CONFIG_PACKAGE_k3screenctrl=y
+          CONFIG_PACKAGE_luci-app-k3screenctrl=y
+          EOF
+          # 取消编译VMware镜像以及镜像填充 (不要删除被缩进的注释符号):
+          # cat >> .config <<EOF
+          # # CONFIG_TARGET_IMAGES_PAD is not set
+          # # CONFIG_VMDK_IMAGES is not set
+          # EOF
+          # 
+          # ========================固件定制部分结束========================
+          # 
+          sed -i 's/^[ \\t]*//g' ./.config
+          make defconfig
+      
+      #- name: Configuration - Build K3 Screenctrl
+      #  env:
+      #    CONFIG_FILE: 'Phicomm_K3_Auto.config'
+      #  run: |
+      #    [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+      #    cd openwrt && make defconfig
       
       - name: Download package
         working-directory: ./openwrt
@@ -108,7 +165,7 @@ jobs:
           find dl -size -1024c -exec ls -l {} \;
           find dl -size -1024c -exec rm -f {} \;
           
-      - name: Build firmware
+      - name: Build
         working-directory: ./openwrt
         run: |
           echo -e "$(nproc) thread build."
