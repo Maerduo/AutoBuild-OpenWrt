@@ -86,7 +86,6 @@ jobs:
         run: |
           ./scripts/feeds update -a
           ./scripts/feeds install -a
-          ./scripts/feeds install -a
       
       - name: Generate configuration file
         working-directory: ./openwrt
@@ -99,6 +98,12 @@ jobs:
           CONFIG_TARGET_bcm53xx=y
           CONFIG_TARGET_bcm53xx_generic=y
           CONFIG_TARGET_bcm53xx_generic_DEVICE_phicomm_k3=y
+          CONFIG_TARGET_BOARD="bcm53xx"
+          CONFIG_TARGET_SUBTARGET="generic"
+          CONFIG_TARGET_PROFILE="DEVICE_phicomm_k3"
+          CONFIG_TARGET_ARCH_PACKAGES="arm_cortex-a9"
+          CONFIG_DEFAULT_TARGET_OPTIMIZATION="-Os -pipe"
+          CONFIG_CPU_TYPE="cortex-a9"
           EOF
           # 固件压缩, 编译ext4格式固件
           # 注意如果选的插件数目多，CONFIG_TARGET_ROOTFS_PARTSIZE要设置大一些
