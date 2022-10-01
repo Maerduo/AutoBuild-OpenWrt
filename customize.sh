@@ -15,4 +15,4 @@ sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.//g' openwrt/package/lean/default-se
 rm openwrt/package/lean/luci-theme-argon -rf
 
 #4. Replace with Hill-98's package
-rm openwrt/package/lean/k3screenctrl -rf
+#rm openwrt/package/lean/k3screenctrl -rf
