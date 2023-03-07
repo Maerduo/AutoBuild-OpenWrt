@@ -32,12 +32,23 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
 
+    - name: free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+        
+    - name: cleanup old action artifacts
+      run: .github/workflows/purge_artifacts.sh ${{ secrets.REPO_ACCESS_TOKEN }}
+    
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
         set +e
-        docker rmi `docker images -q`
+        #docker rmi `docker images -q`
         echo "Deleting files, please wait ..."
         sudo rm -rf \
           /usr/share/dotnet \
