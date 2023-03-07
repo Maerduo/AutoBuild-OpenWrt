@@ -32,7 +32,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
 
-    - name: free disk space
+    - name: Free disk space
       run: |
         sudo swapoff -a
         sudo rm -f /swapfile
@@ -146,9 +146,10 @@ jobs:
     - name: Build firmware
       working-directory: ./openwrt
       run: |
-        # echo -e "$(nproc) thread build."
-        # make -j$(nproc) V=s
-        make -j1 V=s
+        df -h
+        echo -e "$(nproc) thread build."
+        make -j$(nproc) V=s
+        # make -j1 V=s
 
     - name : Upload artifact
       uses: actions/upload-artifact@master
